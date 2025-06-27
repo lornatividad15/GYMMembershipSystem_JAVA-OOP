@@ -10,7 +10,7 @@ public class InputHelper {
             try {
                 return Integer.parseInt(sc.nextLine().trim());
             } catch (NumberFormatException e) {
-                System.out.print(UIUtils.INDENT + "Invalid number. Try again: ");
+                System.out.print("\n" + UIUtils.INDENT + "Invalid number. Try again: ");
             }
         }
     }
@@ -23,7 +23,7 @@ public class InputHelper {
             if (!input.isEmpty()) {
                 return input;
             }
-            System.out.println(UIUtils.INDENT + "Input cannot be empty. Please try again.");
+            System.out.println("\n" + UIUtils.INDENT + "Input cannot be empty. Please try again.\n");
         }
     }
 
@@ -35,13 +35,13 @@ public class InputHelper {
             if (type.equals("REGULAR") || type.equals("VIP") || type.equals("SVIP")) {
                 return type;
             }
-            System.out.println(UIUtils.INDENT + "Invalid type. Please enter REGULAR, VIP, or SVIP.");
+            System.out.println("\n" + UIUtils.INDENT + "Invalid type. Please enter REGULAR, VIP, or SVIP.\n");
         }
     }
 
     // ✅ Confirmation for deletions (Y/N)
     public static boolean confirm(Scanner sc, String message) {
-        System.out.print(UIUtils.INDENT + message + " (Y/N): ");
+        System.out.print("\n" + UIUtils.INDENT + message + " (Y/N): ");
         String response = sc.nextLine().trim().toUpperCase();
         return response.equals("Y");
     }
@@ -52,7 +52,7 @@ public class InputHelper {
             try {
                 return Double.parseDouble(sc.nextLine().trim());
             } catch (NumberFormatException e) {
-                System.out.println(UIUtils.INDENT + "Invalid number. Try again.");
+                System.out.println("\n" + UIUtils.INDENT + "Invalid number. Try again.\n");
             }
         }
     }

@@ -25,6 +25,21 @@ public class MembershipManager {
         return false;
     }
 
+    // Check if username is taken by a member or admin
+    public boolean isUsernameTaken(String username, ArrayList<Admin> admins) {
+        for (Member m : members) {
+            if (m.getUsername().equalsIgnoreCase(username)) {
+                return true;
+            }
+        }
+        for (Admin a : admins) {
+            if (a.getUsername().equalsIgnoreCase(username)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void addMember(String username, String password, String name, int age, String gender, String membershipType, double weight, double height) {
         if (isUsernameTaken(username)) {
             System.out.println(UIUtils.INDENT + "Username already taken. Please choose another.");
@@ -43,11 +58,25 @@ public class MembershipManager {
     // OOP: Encapsulation
     public void listMembers() {
         if (members.isEmpty()) {
-            System.out.println(UIUtils.INDENT + "No members found.");
+            System.out.println("\n" + UIUtils.INDENT + "No members found.");
         } else {
             for (Member member : members) {
                 member.displayInfo(); // OOP: Polymorphism (overridden displayInfo)
             }
+        }
+    }
+
+    // OOP: List members by membership type
+    public void listMembersByType(String type) {
+        boolean found = false;
+        for (Member member : members) {
+            if (member.getMembershipType().equalsIgnoreCase(type)) {
+                member.displayInfo();
+                found = true;
+            }
+        }
+        if (!found) {
+            System.out.println(UIUtils.INDENT + "No members found with type: " + type);
         }
     }
 
@@ -60,7 +89,7 @@ public class MembershipManager {
             }
         }
         if (!found) {
-            System.out.println(UIUtils.INDENT + "No member found with that name.");
+            System.out.println("\n" + UIUtils.INDENT + "No member found with that name.");
         }
     }
 
@@ -74,14 +103,14 @@ public class MembershipManager {
             }
         }
         if (!found) {
-            System.out.println(UIUtils.INDENT + "No members expiring on " + date.format(fmt));
+            System.out.println("\n" + UIUtils.INDENT + "No members expiring on " + date.format(fmt));
         }
     }
 
     public void updateMember(String name, Scanner sc) {
         for (Member member : members) {
             if (member.getName().equalsIgnoreCase(name)) {
-                System.out.println(UIUtils.INDENT + "Editing member: " + member.getName());
+                System.out.println("\n" + UIUtils.INDENT + "Editing member: " + member.getName());
                 String newName = InputHelper.readNonEmptyString(sc, "Enter new name: ");
                 int newAge = InputHelper.readInt(sc);
                 String newGender = InputHelper.readNonEmptyString(sc, "Enter new gender: ");
@@ -93,11 +122,11 @@ public class MembershipManager {
                 updated.setAge(newAge);
                 updated.setGender(newGender);
 
-                System.out.println(UIUtils.INDENT + "Member updated successfully!");
+                System.out.println("\n" + UIUtils.INDENT + "Member updated successfully!");
                 return;
             }
         }
-        System.out.println(UIUtils.INDENT + "No member found with that name.");
+        System.out.println("\n" + UIUtils.INDENT + "No member found with that name.");
     }
 
     public void deleteMember(String name, Scanner sc) {
@@ -130,7 +159,7 @@ public class MembershipManager {
         int total = regular + vip + svip;
         System.out.println(UIUtils.INDENT + "+-------------------------------------------+");
         System.out.println(UIUtils.INDENT + "|             MEMBERSHIP REPORT             |");
-        System.out.println(UIUtils.INDENT + "+-------------------------------------------+");
+        System.out.println(UIUtils.INDENT + "+-------------------------------------------+\n");
         System.out.println(UIUtils.INDENT + "Total Members : " + total);
         System.out.println(UIUtils.INDENT + "REGULAR        : " + regular);
         System.out.println(UIUtils.INDENT + "VIP            : " + vip);
@@ -144,7 +173,7 @@ public class MembershipManager {
         }
         System.out.println(UIUtils.INDENT + "+-------------------------------------------+");
         System.out.println(UIUtils.INDENT + "|             TOTAL SALES REPORT            |");
-        System.out.println(UIUtils.INDENT + "+-------------------------------------------+");
+        System.out.println(UIUtils.INDENT + "+-------------------------------------------+\n");
         System.out.printf(UIUtils.INDENT + "Total Revenue from Memberships: Php %.2f\n", totalSales);
     }
 
@@ -210,5 +239,32 @@ public class MembershipManager {
         updated.setHiredTrainer(member.getHiredTrainer());
         members.add(updated);
         return updated;
+    }
+
+    // OOP: List all members sorted by expiry date
+    public void listMembersSortedByExpiryDate() {
+        if (members.isEmpty()) {
+            System.out.println("\n" + UIUtils.INDENT + "No members found.");
+            return;
+        }
+        ArrayList<Member> sorted = new ArrayList<>(members);
+        sorted.sort((a, b) -> a.getExpiryDate().compareTo(b.getExpiryDate()));
+        System.out.println(UIUtils.INDENT + "+------------------------------------------------+");
+        System.out.println(UIUtils.INDENT + "|         MEMBERS SORTED BY EXPIRY DATE          |");
+        System.out.println(UIUtils.INDENT + "+------------------------------------------------+\n");
+        for (Member member : sorted) {
+            member.displayInfo();
+        }
+    }
+
+    // Update member password with validation
+    public boolean updateMemberPassword(Member member, String newPassword) {
+        if (member.getPassword().equals(newPassword)) {
+            System.out.println(UIUtils.INDENT + "New password cannot be the same as the old password.");
+            return false;
+        }
+        member.setPassword(newPassword);
+        System.out.println(UIUtils.INDENT + "Password updated successfully.");
+        return true;
     }
 }

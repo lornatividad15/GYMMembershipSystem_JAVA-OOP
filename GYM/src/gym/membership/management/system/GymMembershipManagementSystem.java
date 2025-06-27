@@ -32,13 +32,15 @@ public class GymMembershipManagementSystem {
                 case "1":
                     // Member registration with username/password
                     UIUtils.clearScreen();
-                    System.out.println(UIUtils.INDENT + "--- Member Registration ---");
+                    System.out.println(UIUtils.INDENT + "+------------------------------------------------+");
+                    System.out.println(UIUtils.INDENT + "|               MEMBER REGISTRATION              |");
+                    System.out.println(UIUtils.INDENT + "+------------------------------------------------+\n");
                     // Prompt for username and check immediately for duplicates
                     String username;
                     while (true) {
                         username = InputHelper.readNonEmptyString(sc, "Enter Username: ");
-                        if (memberManager.isUsernameTaken(username)) {
-                            System.out.println(UIUtils.INDENT + "Username already taken. Please choose another.");
+                        if (memberManager.isUsernameTaken(username, adminManager.getAdmins())) {
+                            System.out.println("\n" + UIUtils.INDENT + "Username already taken. Please choose another.\n");
                         } else {
                             break;
                         }
@@ -47,7 +49,20 @@ public class GymMembershipManagementSystem {
                     String name = InputHelper.readNonEmptyString(sc, "Enter Name: ");
                     System.out.print(UIUtils.INDENT + "Enter Age: ");
                     int age = InputHelper.readInt(sc);
-                    String gender = InputHelper.readNonEmptyString(sc, "Enter Gender: ");
+                    // Gender input with strict validation for registration
+                    String gender;
+                    while (true) {
+                        String genderInput = InputHelper.readNonEmptyString(sc, "Enter Gender: ");
+                        String genderUpper = genderInput.trim().toUpperCase();
+                        if (genderUpper.equals("MALE") || genderUpper.equals("FEMALE") || genderUpper.equals("M") || genderUpper.equals("F")) {
+                            if (genderUpper.equals("M")) gender = "Male";
+                            else if (genderUpper.equals("F")) gender = "Female";
+                            else gender = genderUpper.charAt(0) + genderUpper.substring(1).toLowerCase();
+                            break;
+                        } else {
+                            System.out.println("\n" + UIUtils.INDENT + "Invalid gender. Please enter MALE, FEMALE, M, or F.");
+                        }
+                    }
                     String membershipType = InputHelper.readMembershipType(sc);
 
                     // Show perks after type selection
@@ -69,22 +84,26 @@ public class GymMembershipManagementSystem {
                 case "2":
                     // Member login with username/password
                     UIUtils.clearScreen();
-                    System.out.println(UIUtils.INDENT + "--- Member Login ---");
+                    System.out.println(UIUtils.INDENT + "+------------------------------------------------+");
+                    System.out.println(UIUtils.INDENT + "|                  MEMBER LOGIN                  |");
+                    System.out.println(UIUtils.INDENT + "+------------------------------------------------+\n");
                     String loginUsername = InputHelper.readNonEmptyString(sc, "Enter Username: ");
                     String loginPassword = InputHelper.readNonEmptyString(sc, "Enter Password: ");
                     Member member = memberManager.getMemberByUsername(loginUsername);
                     if (member != null && member.checkPassword(loginPassword)) {
-                        memberMenu(memberManager, trainerManager, sc, member);
+                        memberMenu(memberManager, trainerManager, adminManager, sc, member);
                     } else {
-                        System.out.println(UIUtils.INDENT + "Invalid username or password.");
+                        System.out.println("\n" + UIUtils.INDENT + "Invalid username or password.\n");
                         UIUtils.pause();
                     }
                     break;
                 case "3":
                     // Admin login
                     UIUtils.clearScreen();
-                    System.out.println(UIUtils.INDENT + "--- Admin Login ---");
-                    System.out.print(UIUtils.INDENT + "Username: ");
+                    System.out.println(UIUtils.INDENT + "+------------------------------------------------+");
+                    System.out.println(UIUtils.INDENT + "|                   ADMIN LOGIN                  |");
+                    System.out.println(UIUtils.INDENT + "+------------------------------------------------+");
+                    System.out.print("\n" + UIUtils.INDENT + "Username: ");
                     String adminUsername = sc.nextLine().trim();
                     System.out.print(UIUtils.INDENT + "Password: ");
                     String adminPassword = sc.nextLine().trim();
@@ -92,49 +111,46 @@ public class GymMembershipManagementSystem {
                     for (Admin admin : adminManager.getAdmins()) {
                         if (admin.getUsername().equals(adminUsername) && admin.checkPassword(adminPassword)) {
                             loggedInAdmin = admin;
-                            System.out.println(UIUtils.INDENT + "Login successful!");
+                            System.out.println("\n" + UIUtils.INDENT + "Login successful!");
                             break;
                         }
                     }
                     if (loggedInAdmin != null) {
                         adminManager.showAdminPanel(memberManager, trainerManager, sc);
                     } else {
-                        System.out.println(UIUtils.INDENT + "Invalid credentials.");
+                        System.out.println("\n" + UIUtils.INDENT + "Invalid credentials.");
                         UIUtils.pause();
                     }
                     break;
                 case "4":
                     // Exit system
-                    System.out.println(UIUtils.INDENT + "Exiting system. Goodbye!");
+                    System.out.println("\n" + UIUtils.INDENT + "Exiting system. Goodbye!");
                     return;
                 default:
-                    System.out.println(UIUtils.INDENT + "Invalid option.");
+                    System.out.println("\n" + UIUtils.INDENT + "Invalid option.");
                     UIUtils.pause();
             }
         }
     }
 
-    /**
-     * Member menu for logged-in members. Demonstrates OOP: dynamic method dispatch, encapsulation, modularity.
-     */
-    private static void memberMenu(MembershipManager manager, TrainerManager trainerManager, Scanner sc, Member member) {
+     //Member menu for logged-in members. Demonstrates OOP: dynamic method dispatch, encapsulation, modularity.
+    private static void memberMenu(MembershipManager manager, TrainerManager trainerManager, AdminManager adminManager, Scanner sc, Member member) {
         while (true) {
             UIUtils.clearScreen();
-            System.out.println(UIUtils.INDENT + "+---------------- MEMBER PANEL ------------------+");
-            System.out.println(UIUtils.INDENT + "Welcome, " + member.getName());
-            System.out.println(UIUtils.INDENT + "[0] Logout");
+            System.out.println(UIUtils.INDENT + "+------------------------------------------------+");
+            System.out.println(UIUtils.INDENT + "|                  MEMBER PANEL                  |");
+            System.out.println(UIUtils.INDENT + "+------------------------------------------------+");
+            System.out.println("\n" + UIUtils.INDENT + "Welcome, " + member.getName());
             System.out.println(UIUtils.INDENT + "[1] View My Info");
             System.out.println(UIUtils.INDENT + "[2] Edit My Info");
             System.out.println(UIUtils.INDENT + "[3] Delete My Account");
             System.out.println(UIUtils.INDENT + "[4] View Trainers");
             System.out.println(UIUtils.INDENT + "[5] Assign Trainer");
-            System.out.println(UIUtils.INDENT + "[6] Search Members");
-            System.out.println(UIUtils.INDENT + "[7] Exit to Main Menu\n");
+            System.out.println(UIUtils.INDENT + "[6] Exit to Main Menu\n");
             System.out.print(UIUtils.INDENT + "Choose an option: ");
             String choice = sc.nextLine().trim();
             switch (choice) {
-                case "0":
-                case "7":
+                case "6":
                     // Logout/Exit
                     return;
                 case "1":
@@ -145,13 +161,13 @@ public class GymMembershipManagementSystem {
                     break;
                 case "2":
                     // Edit member info with submenu
-                    member = editMemberInfo(manager, sc, member); // <-- update reference here
+                    member = editMemberInfo(manager, adminManager, sc, member); // <-- update reference here
                     break;
                 case "3":
                     // Delete account
                     if (InputHelper.confirm(sc, "Are you sure you want to delete your account?")) {
                         manager.deleteMember(member.getName(), sc);
-                        System.out.println(UIUtils.INDENT + "Account deleted.");
+                        System.out.println("\n" + UIUtils.INDENT + "Account deleted.");
                         UIUtils.pause();
                         return;
                     }
@@ -166,16 +182,8 @@ public class GymMembershipManagementSystem {
                     trainerManager.assignTrainerToMember(member, sc);
                     UIUtils.pause();
                     break;
-                case "6":
-                    // Search members by name
-                    UIUtils.clearScreen();
-                    System.out.println(UIUtils.INDENT + "--- Search Members ---");
-                    String searchName = InputHelper.readNonEmptyString(sc, "Enter name to search: ");
-                    manager.searchByName(searchName);
-                    UIUtils.pause();
-                    break;
                 default:
-                    System.out.println(UIUtils.INDENT + "Invalid option.");
+                    System.out.println("\n" + UIUtils.INDENT + "Invalid option.");
                     UIUtils.pause();
             }
         }
@@ -184,64 +192,113 @@ public class GymMembershipManagementSystem {
     /**
      * Edit member info submenu: allows editing name, age, gender, weight, height, membership type, password.
      */
-    private static Member editMemberInfo(MembershipManager manager, Scanner sc, Member member) {
+    private static Member editMemberInfo(MembershipManager manager, AdminManager adminManager, Scanner sc, Member member) {
         while (true) {
             UIUtils.clearScreen();
-            System.out.println(UIUtils.INDENT + "--- Edit My Info ---");
-            System.out.println(UIUtils.INDENT + "[1] Name");
+            System.out.println(UIUtils.INDENT + "+------------------------------------------------+");
+            System.out.println(UIUtils.INDENT + "|                  EDIT MY INFO                  |");
+            System.out.println(UIUtils.INDENT + "+------------------------------------------------+");
+            System.out.println("\n" + UIUtils.INDENT + "[1] Name");
             System.out.println(UIUtils.INDENT + "[2] Age");
             System.out.println(UIUtils.INDENT + "[3] Gender");
-            System.out.println(UIUtils.INDENT + "[4] Weight");
-            System.out.println(UIUtils.INDENT + "[5] Height");
-            System.out.println(UIUtils.INDENT + "[6] Membership Type");
-            System.out.println(UIUtils.INDENT + "[7] Password");
+            System.out.println(UIUtils.INDENT + "[4] Weight (if applicable)");
+            System.out.println(UIUtils.INDENT + "[5] Height (if applicable)");
+            System.out.println(UIUtils.INDENT + "[6] Password");
+            System.out.println(UIUtils.INDENT + "[7] Username");
             System.out.println(UIUtils.INDENT + "[8] Back\n");
-            System.out.print(UIUtils.INDENT + "Choose what to edit: ");
+            System.out.print(UIUtils.INDENT + "Choose an option: ");
             String choice = sc.nextLine().trim();
             switch (choice) {
                 case "1":
-                    member.setName(InputHelper.readNonEmptyString(sc, "Enter new Name: "));
+                    String newName = InputHelper.readNonEmptyString(sc, "Enter new name: ");
+                    member.setName(newName);
                     System.out.println(UIUtils.INDENT + "Name updated.");
                     UIUtils.pause();
                     break;
                 case "2":
-                    System.out.print(UIUtils.INDENT + "Enter new Age: ");
-                    member.setAge(InputHelper.readInt(sc));
+                    System.out.print(UIUtils.INDENT + "Enter new age: ");
+                    int newAge = InputHelper.readInt(sc);
+                    member.setAge(newAge);
                     System.out.println(UIUtils.INDENT + "Age updated.");
                     UIUtils.pause();
                     break;
                 case "3":
-                    member.setGender(InputHelper.readNonEmptyString(sc, "Enter new Gender: "));
-                    System.out.println(UIUtils.INDENT + "Gender updated.");
+                    while (true) {
+                        System.out.print(UIUtils.INDENT + "Enter new gender (M/F/MALE/FEMALE): ");
+                        String gender = sc.nextLine().trim().toUpperCase();
+                        if (gender.equals("M") || gender.equals("F") || gender.equals("MALE") || gender.equals("FEMALE")) {
+                            member.setGender(gender);
+                            System.out.println(UIUtils.INDENT + "Gender updated.");
+                            break;
+                        } else {
+                            System.out.println(UIUtils.INDENT + "Invalid gender. Please enter M, F, MALE, or FEMALE.");
+                        }
+                    }
                     UIUtils.pause();
                     break;
                 case "4":
                     if (member instanceof BMIMember) {
-                        ((BMIMember) member).setWeightKg(InputHelper.readDouble(sc, "Enter new Weight (kg): "));
+                        double newWeight = InputHelper.readDouble(sc, "Enter new weight (kg): ");
+                        ((BMIMember) member).setWeightKg(newWeight);
                         System.out.println(UIUtils.INDENT + "Weight updated.");
                     } else {
-                        System.out.println(UIUtils.INDENT + "Weight only available for BMI members.");
+                        System.out.println(UIUtils.INDENT + "Weight is only applicable for BMI members.");
                     }
                     UIUtils.pause();
                     break;
                 case "5":
                     if (member instanceof BMIMember) {
-                        ((BMIMember) member).setHeightCm(InputHelper.readDouble(sc, "Enter new Height (cm): "));
+                        double newHeight = InputHelper.readDouble(sc, "Enter new height (cm): ");
+                        ((BMIMember) member).setHeightCm(newHeight);
                         System.out.println(UIUtils.INDENT + "Height updated.");
                     } else {
-                        System.out.println(UIUtils.INDENT + "Height only available for BMI members.");
+                        System.out.println(UIUtils.INDENT + "Height is only applicable for BMI members.");
                     }
                     UIUtils.pause();
                     break;
                 case "6":
-                    String newType = InputHelper.readMembershipType(sc);
-                    member = manager.updateMemberType(member, newType);
-                    System.out.println(UIUtils.INDENT + "Membership type updated.");
+                    System.out.print(UIUtils.INDENT + "Enter current password: ");
+                    String currentPass = sc.nextLine();
+                    if (!member.checkPassword(currentPass)) {
+                        System.out.println(UIUtils.INDENT + "Incorrect current password.");
+                        UIUtils.pause();
+                        break;
+                    }
+                    System.out.print(UIUtils.INDENT + "Enter new password: ");
+                    String newPass = sc.nextLine();
+                    if (newPass.equals(currentPass)) {
+                        System.out.println(UIUtils.INDENT + "New password cannot be the same as the old password.");
+                        UIUtils.pause();
+                        break;
+                    }
+                    member.setPassword(newPass);
+                    System.out.println(UIUtils.INDENT + "Password updated.");
                     UIUtils.pause();
                     break;
                 case "7":
-                    member.setPassword(InputHelper.readNonEmptyString(sc, "Enter new Password: "));
-                    System.out.println(UIUtils.INDENT + "Password updated.");
+                    System.out.print(UIUtils.INDENT + "Enter new username: ");
+                    String newUsername = sc.nextLine().trim();
+                    if (newUsername.isEmpty()) {
+                        System.out.println(UIUtils.INDENT + "Username cannot be empty.");
+                        UIUtils.pause();
+                        break;
+                    }
+                    // Check uniqueness across members and admins using AdminManager
+                    boolean takenByMember = manager.isUsernameTaken(newUsername);
+                    boolean takenByAdmin = false;
+                    for (Admin a : adminManager.getAdmins()) {
+                        if (a.getUsername().equalsIgnoreCase(newUsername)) {
+                            takenByAdmin = true;
+                            break;
+                        }
+                    }
+                    if (takenByMember || takenByAdmin) {
+                        System.out.println(UIUtils.INDENT + "Username already taken by a member or admin.");
+                        UIUtils.pause();
+                        break;
+                    }
+                    member.setUsername(newUsername);
+                    System.out.println(UIUtils.INDENT + "Username updated.");
                     UIUtils.pause();
                     break;
                 case "8":

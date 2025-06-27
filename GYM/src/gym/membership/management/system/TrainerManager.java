@@ -17,31 +17,33 @@ public class TrainerManager {
     // OOP: Encapsulation, modularity
     public void assignTrainerToMember(Member member, Scanner sc) {
         listTrainers();
-        System.out.print(UIUtils.INDENT + "Enter trainer name to assign: ");
+        System.out.print("\n" + UIUtils.INDENT + "Enter trainer name to assign: ");
         String name = sc.nextLine();
 
         boolean found = false;
         for (Trainer t : trainers) {
             if (t.getName().equalsIgnoreCase(name)) {
                 member.setHiredTrainer(t.getName());
-                System.out.println(UIUtils.INDENT + "Trainer assigned successfully!");
+                System.out.println("\n" + UIUtils.INDENT + "Trainer assigned successfully!");
                 found = true;
                 break;
             }
         }
 
         if (!found) {
-            System.out.println(UIUtils.INDENT + "Trainer not found.");
+            System.out.println("\n" + UIUtils.INDENT + "Trainer not found.");
         }
     }
 
     // OOP: Polymorphism (uses Member's getHiredTrainer, which can be overridden)
     public void viewTrainersWithClients(ArrayList<Member> members) {
         UIUtils.clearScreen();
-        System.out.println(UIUtils.INDENT + "--- Trainers and Their Clients ---");
+        System.out.println(UIUtils.INDENT + "+------------------------------------------------+");
+        System.out.println(UIUtils.INDENT + "|            TRAINER AND THEIR CLIENTS           |");
+        System.out.println(UIUtils.INDENT + "+------------------------------------------------+");
 
         if (trainers.isEmpty()) {
-            System.out.println(UIUtils.INDENT + "No trainers available.");
+            System.out.println("\n" + UIUtils.INDENT + "No trainers available.");
             return;
         }
 
@@ -63,7 +65,7 @@ public class TrainerManager {
             }
 
             if (clients.isEmpty()) {
-                System.out.println(UIUtils.INDENT + "  No clients assigned.");
+                System.out.println("\n" + UIUtils.INDENT + "  No clients assigned.");
             } else {
                 Collections.sort(clients);
                 for (String client : clients) {
@@ -75,7 +77,7 @@ public class TrainerManager {
 
     // OOP: Encapsulation
     public void listTrainers() {
-        System.out.println(UIUtils.INDENT + "Available Trainers:");
+        System.out.println("\n" + UIUtils.INDENT + "Available Trainers:");
         for (Trainer t : trainers) {
             System.out.println(UIUtils.INDENT + "- " + t.getName() + " (" + t.getExpertise() + ") | Availability: " + t.getAvailability());
         }
@@ -85,7 +87,7 @@ public class TrainerManager {
      * List trainers (name and expertise only) for member panel.
      */
     public void listTrainersSimple() {
-        System.out.println(UIUtils.INDENT + "Available Trainers:");
+        System.out.println("\n" + UIUtils.INDENT + "Available Trainers:");
         for (Trainer t : trainers) {
             System.out.println(UIUtils.INDENT + "- " + t.getName() + " (" + t.getExpertise() + ") | Availability: " + t.getAvailability());
         }
